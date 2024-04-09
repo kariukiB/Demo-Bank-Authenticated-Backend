@@ -1,2 +1,2 @@
 # Demo-Bank-Authenticated-Backend
-End to end demo bank backend
+Banking Application in Java 17, Springboot 3, MySQL and Spring Security 6
