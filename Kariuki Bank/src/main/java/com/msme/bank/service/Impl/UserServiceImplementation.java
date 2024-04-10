@@ -155,6 +155,13 @@ public class UserServiceImplementation implements UserService {
                 .transactionType("Credit")
                 .build();
         transactionService.saveTransaction(transactionDto);
+        //Sending email alert for credit transaction
+        EmailDetails emailDetails = EmailDetails.builder()
+                .recipient(userToCredit.getEmail())
+                .subject("Deposit Transaction Alert!")
+                .messageBody("Greetings Dear " + userToCredit.getFirstName() +"\n The sum of Ksh " + request.getAmount() + " has been credited to your account " + request.getAccountNumber())
+                .build();
+        emailService.sendEmailAlerts(emailDetails);
 
         return BankResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREDITED_SUCCESS)

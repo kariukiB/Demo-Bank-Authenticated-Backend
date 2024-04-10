@@ -15,11 +15,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         contact = @Contact(
                 name = "Kariuki Bonface",
                 email = "bonface.karau@programmer.net",
-                url = "https://github.com/kariukiB/knsbank"
+                url = "https://github.com/kariukiB/Demo-Bank-Authenticated-Backend"
         ),
         license = @License(
                 name = "Kariuki and Sons Bank Pvt Ltd",
-                url = "https://github.com/kariukiB/knsbank"
+                url = "https://github.com/kariukiB/Demo-Bank-Authenticated-Backend"
         )
 ))
 public class KariukiBankApplication {
