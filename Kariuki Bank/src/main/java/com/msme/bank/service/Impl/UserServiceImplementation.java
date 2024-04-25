@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -98,6 +99,32 @@ public class UserServiceImplementation implements UserService {
                 .responseCode("Login Successful!")
                 .responseMessage(jwtTokenProvider.generateToken(authentication))
                 .build();
+    }
+
+    @Override
+    public BankResponse accountEnquiry(String name) {
+       Optional<User> user = userRepository.findByFirstName(name);
+       try{
+           if (user.isEmpty()){
+               return BankResponse.builder()
+                       .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
+                       .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
+                       .build();
+
+           }
+           User foundUser = user.get();
+           return BankResponse.builder()
+                   .responseCode(AccountUtils.ACCOUNT_FOUND_CODE)
+                   .responseMessage(AccountUtils.ACCOUNT_FOUND_SUCCESS)
+                   .accountInfo(AccountInfo.builder()
+                           .accountName(foundUser.getFirstName() + " " + foundUser.getLastName() + foundUser.getOtherName())
+                           .accountNumber(foundUser.getAccountNumber())
+                           .accountBalance(foundUser.getAccountBalance())
+                           .build())
+                   .build();
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
     }
 
     @Override

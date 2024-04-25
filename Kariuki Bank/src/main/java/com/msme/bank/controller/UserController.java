@@ -51,4 +51,8 @@ public class UserController {
     public BankResponse transfer(@RequestBody TransferRequest request) {
         return userService.transfer(request);
     }
+    @GetMapping("/account-by-name")
+    public BankResponse findAccount(@RequestParam String name){
+        return userService.accountEnquiry(name);
+    }
 }
