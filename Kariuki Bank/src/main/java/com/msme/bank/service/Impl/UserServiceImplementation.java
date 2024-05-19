@@ -9,7 +9,8 @@ import com.msme.bank.service.EmailService;
 import com.msme.bank.service.TransactionService;
 import com.msme.bank.service.UserService;
 import com.msme.bank.utils.AccountUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.msme.bank.utils.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,25 +23,34 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    EmailService emailService;
-    @Autowired
-    TransactionService transactionService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    JwtTokenProvider jwtTokenProvider;
-    @Override
-    public BankResponse createAccount(UserRequest userRequest) {
+
+    private final UserRepository userRepository;
+
+    private final EmailService emailService;
+
+    private final TransactionService transactionService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public UserServiceImplementation(UserRepository userRepository, EmailService emailService, TransactionService transactionService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+        this.transactionService = transactionService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    public Response<Object> createAccount(UserRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())){
-           return BankResponse.builder()
-                    .responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
-                    .responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE)
-                   .accountInfo(null)
+           return Response.builder()
+                   .statusCode(HttpStatus.FORBIDDEN.value())
+                   .message("User with email " + userRequest.getEmail() + " exists")
+                   .entity(null)
                     .build();
         }
         User newUser = User.builder()
@@ -70,10 +80,10 @@ public class UserServiceImplementation implements UserService {
                 .build();
         emailService.sendEmailAlerts(emailDetails);
 
-        return BankResponse.builder()
-                .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESS)
-                .responseMessage(AccountUtils.ACCOUNT_CREATION_MESSAGE)
-                .accountInfo(AccountInfo.builder()
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Account created successfully")
+                .entity(AccountInfo.builder()
                         .accountBalance(savedUser.getAccountBalance())
                         .accountNumber(savedUser.getAccountNumber())
                         .accountName(savedUser.getFirstName() + " " + savedUser.getLastName()+ " " + savedUser.getOtherName())
@@ -84,7 +94,7 @@ public class UserServiceImplementation implements UserService {
     }
 
     public BankResponse login(LoginDto loginDto){
-        Authentication authentication = null;
+        Authentication authentication;
         authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
         );
