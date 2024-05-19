@@ -2,6 +2,7 @@ package com.msme.bank.controller;
 
 import com.msme.bank.dto.*;
 import com.msme.bank.service.UserService;
+import com.msme.bank.utils.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +25,7 @@ public class UserController {
             description = "Http status 201 CREATED"
     )
     @PostMapping
-    public BankResponse createAccount(@RequestBody UserRequest userRequest){
+    public Response<Object> createAccount(@RequestBody UserRequest userRequest){
       return   userService.createAccount(userRequest);
     }
     @PostMapping("/login")

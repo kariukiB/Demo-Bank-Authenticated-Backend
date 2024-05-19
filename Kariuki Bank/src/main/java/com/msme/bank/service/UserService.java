@@ -1,9 +1,10 @@
 package com.msme.bank.service;
 
 import com.msme.bank.dto.*;
+import com.msme.bank.utils.Response;
 
 public interface UserService {
-   BankResponse createAccount(UserRequest userRequest);
+   Response<Object> createAccount(UserRequest userRequest);
    BankResponse balanceEnquiry(EnquiryRequest request);
    String nameEnquiry(EnquiryRequest request);
    BankResponse creditAccount(CreditDebitRequest request);
