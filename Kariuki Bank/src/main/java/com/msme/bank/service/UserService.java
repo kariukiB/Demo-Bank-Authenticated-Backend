@@ -5,7 +5,7 @@ import com.msme.bank.utils.Response;
 
 public interface UserService {
    Response<Object> createAccount(UserRequest userRequest);
-   BankResponse balanceEnquiry(EnquiryRequest request);
+   Response<Object> balanceEnquiry(EnquiryRequest request);
    String nameEnquiry(EnquiryRequest request);
    BankResponse creditAccount(CreditDebitRequest request);
    BankResponse debitAccount(CreditDebitRequest request);

@@ -138,21 +138,21 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public BankResponse balanceEnquiry(EnquiryRequest request) {
+    public Response<Object> balanceEnquiry(EnquiryRequest request) {
         //Checking if provided account exists
         Boolean isAccountExist = userRepository.existsByAccountNumber(request.getAccountNumber());
         if (!isAccountExist){
-            return BankResponse.builder()
-                    .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
-                    .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
-                    .accountInfo(null)
+            return Response.builder()
+                    .message("Account number " + request.getAccountNumber() + " not found!")
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .entity(null)
                     .build();
         }
         User foundUser = userRepository.findByAccountNumber(request.getAccountNumber());
-        return BankResponse.builder()
-                .responseCode(AccountUtils.ACCOUNT_FOUND_CODE)
-                .responseMessage(AccountUtils.ACCOUNT_FOUND_SUCCESS)
-                .accountInfo(AccountInfo.builder()
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Account balance retrieved successfully")
+                .entity(AccountInfo.builder()
                         .accountBalance(foundUser.getAccountBalance())
                         .accountNumber(request.getAccountNumber())
                         .accountName(foundUser.getFirstName() + " " + foundUser.getOtherName() + " " + foundUser.getLastName())

@@ -32,10 +32,12 @@ public class UserController {
     public BankResponse login(@RequestBody LoginDto loginDto){
         return userService.login(loginDto);
     }
+
     @GetMapping("/get-balance")
-    public BankResponse balanceEnquiry(@RequestParam String accountNumber){
-        return userService.balanceEnquiry(new EnquiryRequest(accountNumber));
+    public Response<Object> balanceEnquiry(@RequestBody EnquiryRequest request){
+        return userService.balanceEnquiry(request);
     }
+
     @GetMapping("/get-name")
     public String nameEnquiry(@RequestParam String accountNumber){
         return userService.nameEnquiry(new EnquiryRequest(accountNumber));
