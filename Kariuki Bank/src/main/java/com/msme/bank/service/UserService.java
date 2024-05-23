@@ -5,11 +5,11 @@ import com.msme.bank.utils.Response;
 
 public interface UserService {
    Response<Object> createAccount(UserRequest userRequest);
-   BankResponse balanceEnquiry(EnquiryRequest request);
+   Response<Object> balanceEnquiry(EnquiryRequest request);
    String nameEnquiry(EnquiryRequest request);
    BankResponse creditAccount(CreditDebitRequest request);
    BankResponse debitAccount(CreditDebitRequest request);
    BankResponse transfer(TransferRequest request);
    BankResponse login(LoginDto loginDto);
-   BankResponse accountEnquiry(String name);
+   Response accountEnquiry(String name);
 }

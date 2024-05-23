@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -112,25 +112,22 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public BankResponse accountEnquiry(String name) {
-       Optional<User> user = userRepository.findByFirstName(name);
+    public Response<Object> accountEnquiry(String name) {
+       List<User> user = userRepository.findByFirstName(name);
        try{
            if (user.isEmpty()){
-               return BankResponse.builder()
-                       .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
-                       .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
+               return Response.builder()
+                       .message(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
+                       .statusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value())
                        .build();
 
            }
-           User foundUser = user.get();
-           return BankResponse.builder()
-                   .responseCode(AccountUtils.ACCOUNT_FOUND_CODE)
-                   .responseMessage(AccountUtils.ACCOUNT_FOUND_SUCCESS)
-                   .accountInfo(AccountInfo.builder()
-                           .accountName(foundUser.getFirstName() + " " + foundUser.getLastName() + foundUser.getOtherName())
-                           .accountNumber(foundUser.getAccountNumber())
-                           .accountBalance(foundUser.getAccountBalance())
-                           .build())
+
+           return Response.builder()
+                   .statusCode(HttpStatus.FOUND.value())
+                   .message(AccountUtils.ACCOUNT_FOUND_SUCCESS)
+                   .entity(user)
+
                    .build();
        } catch (Exception e) {
            throw new RuntimeException(e);
@@ -138,21 +135,21 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public BankResponse balanceEnquiry(EnquiryRequest request) {
+    public Response<Object> balanceEnquiry(EnquiryRequest request) {
         //Checking if provided account exists
         Boolean isAccountExist = userRepository.existsByAccountNumber(request.getAccountNumber());
         if (!isAccountExist){
-            return BankResponse.builder()
-                    .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
-                    .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
-                    .accountInfo(null)
+            return Response.builder()
+                    .message("Account number " + request.getAccountNumber() + " not found!")
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .entity(null)
                     .build();
         }
         User foundUser = userRepository.findByAccountNumber(request.getAccountNumber());
-        return BankResponse.builder()
-                .responseCode(AccountUtils.ACCOUNT_FOUND_CODE)
-                .responseMessage(AccountUtils.ACCOUNT_FOUND_SUCCESS)
-                .accountInfo(AccountInfo.builder()
+        return Response.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Account balance retrieved successfully")
+                .entity(AccountInfo.builder()
                         .accountBalance(foundUser.getAccountBalance())
                         .accountNumber(request.getAccountNumber())
                         .accountName(foundUser.getFirstName() + " " + foundUser.getOtherName() + " " + foundUser.getLastName())
